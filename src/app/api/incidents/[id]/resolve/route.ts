@@ -2,24 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Record<string, string> }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = params.id
-
+  // const { id } = await params;
   try {
-    const incidentId = parseInt(id)
-
-    if (isNaN(incidentId)) {
+     const { id } = await params;
+    
+    // Validate ID
+    if (!id) {
       return NextResponse.json(
-        { error: 'Invalid incident ID' },
+        { error: 'Incident ID is required' }, 
         { status: 400 }
-      )
+      );
     }
 
     const updatedIncident = await prisma.incident.update({
       where: {
-        id: incidentId,
+        id: parseInt(id),
       },
       data: {
         resolved: true,
