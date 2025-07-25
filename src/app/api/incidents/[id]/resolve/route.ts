@@ -1,18 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
+
   try {
-    const incidentId = parseInt(params.id)
-    
+    const incidentId = parseInt(id);
+
     if (isNaN(incidentId)) {
       return NextResponse.json(
         { error: 'Invalid incident ID' },
         { status: 400 }
-      )
+      );
     }
 
     const updatedIncident = await prisma.incident.update({
@@ -25,14 +27,14 @@ export async function PATCH(
       include: {
         camera: true,
       },
-    })
+    });
 
-    return NextResponse.json(updatedIncident)
+    return NextResponse.json(updatedIncident);
   } catch (error) {
-    console.error('Error resolving incident:', error)
+    console.error('Error resolving incident:', error);
     return NextResponse.json(
       { error: 'Failed to resolve incident' },
       { status: 500 }
-    )
+    );
   }
 }
